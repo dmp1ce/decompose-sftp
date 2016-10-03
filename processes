@@ -1,0 +1,34 @@
+source $(_decompose-project-root)/.decompose/environment/lib/common/processes
+source $(_decompose-project-root)/.decompose/environment/lib/docker/processes
+
+DECOMPOSE_PROCESSES+=( 'cron' 'build' 'up'
+  "${DECOMPOSE_COMMON_PROCESSES[@]}" "${DECOMPOSE_DOCKER_PROCESSES[@]}" )
+
+_decompose-process-build(){
+  echo "Building SFTP ..."
+  docker-compose pull
+  docker-compose build
+}
+_decompose-process-build_help() {
+  echo "  Process for building SFTP containers"
+}
+
+_decompose-process-up(){
+  echo "Starting SFTP ..."
+  docker-compose up -d
+}
+_decompose-process-up_help() {
+  echo "  Process for starting SFTP containers"
+}
+
+_decompose-process-cron(){
+  echo "Running cron for SFTP ..."
+  _decompose-process-build
+  _decompose-process-up
+  _decompose-process-remove-dangling-docker-images
+}
+_decompose-process-cron_help() {
+  echo "  Process to be run periodically on host"
+}
+
+# vim:syntax=sh tabstop=2 shiftwidth=2 expandtab
